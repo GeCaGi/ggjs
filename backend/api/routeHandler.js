@@ -1,16 +1,16 @@
 const {Router} = require('express');
 const router = Router();
-
+const getUser = require("./authentication/user")
 
 async function test(req, res){
-    let _req = await req.body
-    console.log(_req)
+    const tony = req.body
+    console.log(tony)
     return 400
 }
 
 const NULL = () => null
 
-router.get('/users', NULL);
+router.get('/users', getUser);
 router.get('/users/:email', NULL);
 router.post('/test', test);
 router.post('/users', NULL);

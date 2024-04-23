@@ -1,5 +1,5 @@
 import {Modal} from "bootstrap"
-
+import axios from "axios"
 
 
 export default function LoginForm(){
@@ -12,28 +12,34 @@ export default function LoginForm(){
         return pw.length >= 6 
     }
 
-    function localCheck(form){
+    function localCheck(event){
+        var form = event.target.form
+        
         var email = form[0].value
         var flag1 = validateEmail(email) ? "" : "Inserire un Indirizzo Email del Giorgi\n"
         
         var flag2 = validatePassword(form[1].value) ? "" : "Password Troppo Corta (Minimo 6 caratteri)"
         var error = flag1 != "" && flag2 != "" ? "Dati non validi" : flag1 != "" ? flag1 : flag2
         
-        return error != "" ? error : null
+        error != "" ? error : null
+        var modal = new Modal(document.getElementById("modal1"))
+        document.getElementById("modal1Description").innerText = error
+        modal.show()
+        return 0
     }
 
-    async function serverLogin(form){
-        // await fetch("http://localhost:3001/api/test", {method: "POST",body: "eating pasta is my hobby"})
+    async function serverLogin(e){
+        var form = e.target.form
+        await axios.get("http://localhost:3001/api/users", {body: JSON.stringify({email: form[0].value, pw: form[1].value})})
     }
-
+ 
     function handleLogin(event){
-        var error = localCheck(event.target.form)
-        serverLogin(event.target.form)
+        
     }
 
     return (
         
-            <form>
+            <form id="loginform">
     {/* Email input */}
     <div data-mdb-input-init className="form-outline mb-4">
         <input type="email" id="form2Example1" className="form-control" placeholder="docente@giorgimi.edu.it"/>
@@ -65,7 +71,7 @@ export default function LoginForm(){
     </div>
 
     {/* Submit button */}
-    <button type="button" data-mdb-button-init data-mdb-ripple-init className="btn btn-primary btn-block mb-4"  onClick={handleLogin}>Accedi</button>
+    <button type="button" data-mdb-button-init data-mdb-ripple-init className="btn btn-primary btn-block mb-4"  onClick={serverLogin}>Accedi</button>
     <div class="it-example-modal">
    <div class="modal fade" tabindex="-1" role="dialog" id="modal1" aria-labelledby="modal1Title" aria-describedby="modal1Description">
       <div class="modal-dialog" role="document">
