@@ -1,5 +1,5 @@
 const { hash } = require("bcrypt")
-const { create } = require("../../models/GGUserSchema")
+const Model = require("../../models/GGUserSchema")
 
 const registerUser = async (req, res) => {
     console.log("Request Body:", req.body);
@@ -11,7 +11,7 @@ const registerUser = async (req, res) => {
       }
       const saltRounds = 10;
       const hashedPassword = await hash(password, saltRounds);
-      const newUser = await create({
+      const newUser = await Model.create({
         Email_utente: email,
         Pw_utente: hashedPassword,
         Nome_utente: username,

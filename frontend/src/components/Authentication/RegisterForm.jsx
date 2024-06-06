@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { Modal, ModalHeader, ModalBody, ModalFooter, Button, FormGroup, Input, Label } from 'design-react-kit';
 import axios from "axios";
+import { useNavigate } from 'react-router-dom';
+import { setSessionCookies } from '../../utils/cookieUtils';
 
 const REGEXP = /^((?!\.)[\w\-_.]*[^.])(@\w+)(\.\w+(\.\w+)?[^.\W])$/gm;
 const DOMAIN = "@giorgimi.edu.it";
@@ -35,6 +37,7 @@ export default function RegisterForm() {
     const [error, setError] = useState("");
     const [modalVisible, setModalVisible] = useState(false);
     const [strength, setStrength] = useState({ message: '', color: '' });
+    const navigate = useNavigate();
 
     function handleRegister(event) {
         event.preventDefault();
@@ -64,6 +67,8 @@ export default function RegisterForm() {
                 setModalVisible(true);
             } else {
                 console.log("Registrato correttamente");
+                setSessionCookies(email);
+                navigate('/dashboard'); // Redirect to the dashboard or another page
             }
         } catch (err) {
             setError("Errore di connessione.");

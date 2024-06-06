@@ -1,5 +1,9 @@
 {
   "dependencies": {
+    "concurrently": "^8.2.2",
     "yarn": "^1.22.22"
+  },
+  "scripts": {
+    "avvia": "concurrently \"cd backend && npm run start\" \"cd frontend && npm run dev\""
   }
 }

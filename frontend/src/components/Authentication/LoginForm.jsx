@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { Modal, ModalHeader, ModalBody, ModalFooter, Button, FormGroup, Input, Label, Form } from 'design-react-kit';
 import axios from "axios";
+import { useNavigate } from 'react-router-dom';
+import { setSessionCookies } from '../../utils/cookieUtils';
 
 // Constants and validators outside the component
 const REGEXP = /^((?!\.)[\w\-_.]*[^.])(@\w+)(\.\w+(\.\w+)?[^.\W])$/gm;
@@ -19,6 +21,7 @@ export default function LoginForm() {
     const [password, setPassword] = useState("");
     const [error, setError] = useState("");
     const [modalVisible, setModalVisible] = useState(false);
+    const navigate = useNavigate();
 
     function handleLogin(event) {
         event.preventDefault();
@@ -44,7 +47,8 @@ export default function LoginForm() {
                 setModalVisible(true);
             } else {
                 console.log("LOGGATO");
-                // Redirect or perform further actions
+                setSessionCookies(email);
+                navigate('/dashboard'); // Redirect to the dashboard or another page
             }
         } catch (err) {
             setError("Errore di connessione.");
@@ -61,21 +65,26 @@ export default function LoginForm() {
             <Input type="password" className="form-control" onChange={e => setPassword(e.target.value)} value={password} />
 
             <div className="row mb-4">
-      <div className="col d-flex justify-content-center">
-        {/* Checkbox using design-react-kit */}
-        <FormGroup check className="form-check">
-          <Input id="checkbox1" type="checkbox" className="form-check-input" />
-          <Label for="checkbox1" check className="form-check-label">Ricordami</Label>
-        </FormGroup>
-      </div>
+                <div className="col d-flex justify-content-center">
+                    {/* Checkbox using design-react-kit */}
+                    <FormGroup check className="form-check">
+                        <Input id="checkbox1" type="checkbox" className="form-check-input" />
+                        <Label for="checkbox1" check className="form-check-label">Ricordami</Label>
+                    </FormGroup>
+                </div>
 
-      <div className="col text-center">
-        {/* Simple link */}
-        <a href="#!">Password dimenticata?</a>
-      </div>
-    </div>
+                <div className="col text-center">
+                    {/* Simple link */}
+                    <a href="#!">Password dimenticata?</a>
+                </div>
+            </div>
             
             <button type="submit" className="btn btn-primary btn-block mb-4">Accedi</button>
+            
+            <div className="text-center">
+                <p>Non hai un account? <button type="button" className="btn btn-link" onClick={() => navigate('/register')}>Registrati</button></p>
+            </div>
+            
             {/* Modal for errors */}
             <Modal isOpen={modalVisible} toggle={() => setModalVisible(false)}>
                 <ModalHeader toggle={() => setModalVisible(false)}>Errore</ModalHeader>
@@ -84,6 +93,6 @@ export default function LoginForm() {
                     <Button color="primary" onClick={() => setModalVisible(false)}>Chiudi modale</Button>
                 </ModalFooter>
             </Modal>
-    </Form>
+        </Form>
     );
 }
