@@ -34,6 +34,8 @@ export default function RegisterForm() {
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
     const [rpassword, setRPassword] = useState("");
+    const [verificationCode, setVerificationCode] = useState("");
+    const [isVerified, setIsVerified] = useState(false);
     const [error, setError] = useState("");
     const [modalVisible, setModalVisible] = useState(false);
     const [strength, setStrength] = useState({ message: '', color: '' });
@@ -56,22 +58,31 @@ export default function RegisterForm() {
             setModalVisible(true);
             return;
         }
-        serverRegister();
+        sendVerificationEmail();
     }
 
-    async function serverRegister() {
+    async function sendVerificationEmail() {
         try {
             const result = await axios.post("http://localhost:3001/api/register", { email, username, password });
-            if (result.data.found === 0) {
-                setError("Utente non trovato, registrati.");
-                setModalVisible(true);
-            } else {
-                console.log("Registrato correttamente");
+            if (result.status === 200) {
+                console.log("Email di verifica inviata");
+            }
+        } catch (err) {
+            setError("Errore di connessione.");
+            setModalVisible(true);
+        }
+    }
+
+    async function verifyEmail() {
+        try {
+            const result = await axios.post("http://localhost:3001/api/verify-email", { email, code: verificationCode });
+            if (result.status === 200) {
+                setIsVerified(true);
                 setSessionCookies(email);
                 navigate('/dashboard'); // Redirect to the dashboard or another page
             }
         } catch (err) {
-            setError("Errore di connessione.");
+            setError("Codice di verifica non valido.");
             setModalVisible(true);
         }
     }
@@ -109,7 +120,16 @@ export default function RegisterForm() {
                     <a href="#!">Password dimenticata?</a>
                 </div>
             </div>
-            <button type="submit" className="btn btn-primary btn-block mb-4">Registrati</button>
+            {isVerified ? (
+                <p>Email verificata! Reindirizzamento in corso...</p>
+            ) : (
+                <>
+                    <button type="submit" className="btn btn-primary btn-block mb-4">Registrati</button>
+                    <Label className='form-label' htmlFor="verificationCodeInput">Codice di Verifica</Label>
+                    <Input id="verificationCodeInput" type="text" className="form-control" onChange={e => setVerificationCode(e.target.value)} value={verificationCode} />
+                    <button type="button" className="btn btn-secondary btn-block mt-2" onClick={verifyEmail}>Verifica Email</button>
+                </>
+            )}
             <Modal isOpen={modalVisible} toggle={() => setModalVisible(false)}>
                 <ModalHeader toggle={() => setModalVisible(false)}>Errore</ModalHeader>
                 <ModalBody>{error}</ModalBody>

@@ -1,8 +1,7 @@
 import { Icon } from "design-react-kit";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
-  setCookie,
   getCookie,
   deleteCookie,
   validateCookies,
@@ -12,6 +11,7 @@ import {
 
 export default function Header() {
   const navigate = useNavigate();
+  const [username, setUsername] = useState(null);
 
   useEffect(() => {
     if (location.pathname === "/login" || location.pathname === "/register") return;
@@ -20,6 +20,7 @@ export default function Header() {
       deleteCookie("username");
       navigate("/login");
     } else {
+      setUsername(userInfo.username);
       setSessionCookies(userInfo.username);
     }
   }, [navigate]);
@@ -50,8 +51,8 @@ export default function Header() {
 
                   <div className="it-right-zone">
                     <div className="it-search-wrapper">
-                      <span className="d-none d-md-block">Login</span>
-                      <a className="search-link rounded-icon" aria-label="Entra nell'Area Riservata al Personale Scolastico" href="/login">
+                      <span className="d-none d-md-block">{username ? username : "Login"}</span>
+                      <a className="search-link rounded-icon" aria-label="Entra nell'Area Riservata al Personale Scolastico" href={username ? "#" : "/login"}>
                         <Icon icon="it-user" />
                       </a>
                     </div>
